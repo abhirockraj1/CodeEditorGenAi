@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+SQLAlchemy
+psycopg2-binary  # PostgreSQL adapter
+python-jose[cryptography]
+passlib[bcrypt]
+alembic
+python-dotenv
+fastapi[all]
+PyJWT
+slowapi
+openai
+pydantic-settings
