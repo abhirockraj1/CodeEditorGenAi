@@ -21,7 +21,7 @@ async def rate_limit_exception_handler(request: Request, exc: RateLimitExceeded)
 app.add_exception_handler(RateLimitExceeded, rate_limit_exception_handler)
 
 # Kept the ai suggestion route in main.py because slowapi libary was not handling the sub routers for rate limiting correctly.
-@app.post("/ai_debugging/analyze_code", response_model=ai_debugging_models.CodeAnalysisResponse)
+@app.post("/ai_debugging/analyze_code", response_model=ai_debugging_models.CodeAnalysisResponse,tags=["ai_debugging"])
 @limiter.limit("5/minute")  # This endpoint will be rate-limited to a maximum of 5 requests per minute from the same client.
 async def analyze_code(
     request: Request, 
