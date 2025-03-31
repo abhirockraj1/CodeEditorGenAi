@@ -44,5 +44,3 @@ def delete_file(
     if code_file_service.delete_code_file(db, file_id=file_id):
         return
     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete file")
-
-# Add endpoints for listing user's files, etc.
