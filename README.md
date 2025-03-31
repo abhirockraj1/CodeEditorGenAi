@@ -1,4 +1,4 @@
-# Code Editor Project README
+# Code Editor Project
 
 ## Overview
 
@@ -40,7 +40,7 @@ This guide will help you set up and run Code Editor project on your local machin
 
 1.  **Clone the Repository:**
     ```bash
-    git clone <your_repository_url>
+    git clone https://github.com/abhirockraj1/CodeEditorGenAi.git
     cd CodeEditorGenAi
     ```
 2.  **Ensure Docker and Docker Compose are installed and running on your system.**
