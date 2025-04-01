@@ -167,6 +167,92 @@ This section describes the API endpoint for analyzing code using an AI debugging
         * **Status Code:** `400 Bad Request` (if the request body is invalid or missing required fields).
         * **Status Code:** `429 Too Many Requests` (if the client has exceeded the rate limit).
         * **Status Code:** `500 Internal Server Error` (if there is an error communicating with the AI service or during the analysis process).
+
+# Data Model Definition
+
+This document outlines the data model used in the application, defined using SQLAlchemy for database interaction and Pydantic for data validation.
+
+## SQLAlchemy Models
+
+These classes define the structure of the database tables.
+
+### `User`
+
+Represents a user in the system.
+
+| Column          | Data Type | Constraints                     | Description                               |
+|-----------------|-----------|---------------------------------|-------------------------------------------|
+| `id`            | Integer   | Primary Key, Index              | Unique identifier for the user.           |
+| `email`         | String    | Unique, Index                   | User's email address (must be unique).    |
+| `hashed_password`| String    |                                 | Securely stored hashed password.          |
+| `is_active`     | Boolean   | Default: `True`                 | Indicates if the user account is active. |
+| `owned_files`   | Relationship | `CodeFile`, `back_populates="owner"` | Collection of code files owned by the user. |
+| `collaborations`| Relationship | `CodeFile`, `secondary="collaborations_table"`, `back_populates="collaborators"` | Collection of code files the user is collaborating on. |
+| `editing_sessions`| Relationship | `EditingSession`, `back_populates="user"` | Collection of editing sessions for the user. |
+
+### `Collaboration` (`collaborations_table`)
+
+Represents the association between users and the code files they collaborate on. This is a secondary table for the many-to-many relationship between `User` and `CodeFile`.
+
+| Column   | Data Type | Foreign Key          | Primary Key (Part of) | Description                                  |
+|----------|-----------|----------------------|-----------------------|----------------------------------------------|
+| `user_id`| Integer   | `users.id`           | Yes                   | Foreign key referencing the `User` table.    |
+| `file_id`| Integer   | `code_files.id`      | Yes                   | Foreign key referencing the `CodeFile` table. |
+
+### `CodeFile`
+
+Represents a code file stored in the system.
+
+| Column       | Data Type | Constraints                     | Foreign Key          | Description                                     |
+|--------------|-----------|---------------------------------|----------------------|-------------------------------------------------|
+| `id`         | Integer   | Primary Key, Index              |                      | Unique identifier for the code file.            |
+| `filename`   | String    | Index                           |                      | Name of the code file.                          |
+| `content`    | String    |                                 |                      | The actual content of the code file.            |
+| `owner_id`   | Integer   |                                 | `users.id`           | Foreign key referencing the `User` who owns the file. |
+| `created_at` | DateTime  | Default: `func.now()`           |                      | Timestamp when the file was created.            |
+| `updated_at` | DateTime  | Default: `func.now()`, `onupdate=func.now()` |                      | Timestamp when the file was last updated.       |
+| `owner`      | Relationship | `User`, `back_populates="owned_files"` |                      | The user who owns this code file.               |
+| `collaborators`| Relationship | `User`, `secondary="collaborations_table"`, `back_populates="collaborations"` |                      | Collection of users collaborating on this file. |
+| `editing_sessions`| Relationship | `EditingSession`, `back_populates="code_file"` |                      | Collection of editing sessions for this file. |
+
+### `EditingSession`
+
+Represents a period when a user is actively editing a code file.
+
+| Column        | Data Type | Constraints                     | Foreign Key          | Description                                     |
+|---------------|-----------|---------------------------------|----------------------|-------------------------------------------------|
+| `id`          | Integer   | Primary Key, Index              |                      | Unique identifier for the editing session.        |
+| `user_id`     | Integer   |                                 | `users.id`           | Foreign key referencing the `User` in the session. |
+| `file_id`     | Integer   |                                 | `code_files.id`      | Foreign key referencing the `CodeFile` being edited. |
+| `session_start`| DateTime  | Default: `func.now()`           |                      | Timestamp when the editing session started.       |
+| `session_end` | DateTime  | Nullable: `True`                |                      | Timestamp when the editing session ended (can be null if active). |
+| `user`        | Relationship | `User`, `back_populates="editing_sessions"` |                      | The user involved in this editing session.      |
+| `code_file`   | Relationship | `CodeFile`, `back_populates="editing_sessions"` |                      | The code file being edited in this session.    |
+
+## Pydantic Models
+
+These classes define the expected structure for data input and output, used for validation and serialization.
+
+### `AddCollaborator`
+
+Defines the expected data structure for adding a collaborator to a code file.
+
+| Field   | Data Type | Description                         |
+|---------|-----------|-------------------------------------|
+| `email` | `str`     | The email address of the user to add. |
+
+### `RemoveCollaborator`
+
+Defines the expected data structure for removing a collaborator from a code file.
+
+| Field     | Data Type | Description                                |
+|-----------|-----------|--------------------------------------------|
+| `user_id` | `int`     | The ID of the user to remove as a collaborator. |
+
+---
+
+This information provides a clear overview of the data structure used in the application.
+
 ### Contact
 
 [abhinav Kumar]
