@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "your_very_secret_key"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    OPENROUTER_API_KEY: str = "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"
+    OPENROUTER_API_KEY: str = "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"
 
     class Config:
         env_file = ".env"
