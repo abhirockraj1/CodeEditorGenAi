@@ -118,15 +118,7 @@ This section describes the API endpoints for real-time collaborative code editin
         * `token` (string, required): A valid authentication token (JWT) passed as a query parameter for WebSocket authentication.
     * **Authentication:** Authenticates the user via the provided JWT token in the query parameters. The user must be the owner of the file or an authorized collaborator to establish a connection.
     * **Communication:** Once connected, the WebSocket allows bidirectional communication using JSON messages for:
-                                * **`expects a payload like this`:** 
-                                ```json
-                                {
-                                    "type": "text_change",
-                                    "start": 0,
-                                    "delete_count": 17,
-                                    "insert": "Example code modification"
-                                } 
-        * **`text_change`:** Propagates text modifications made by a user to other connected users in real-time. Expects a payload conforming to the `TextChange` Pydantic model.
+     * **`text_change`:** Propagates text modifications made by a user to other connected users in real-time. Expects a payload conforming to the `TextChange` Pydantic model.
         * **`cursor_position`:** Broadcasts the current cursor position of a user to other collaborators. Expects a payload conforming to the `CursorPosition` Pydantic model.
         * **`highlight`:** Broadcasts text highlighting actions performed by a user. Expects a payload conforming to the `Highlight` Pydantic model.
         * **`user_joined` (Sent by server):** Notifies connected users when a new user joins the collaborative session.
@@ -135,6 +127,15 @@ This section describes the API endpoints for real-time collaborative code editin
     * **Disconnection Codes:**
         * `1008 Policy Violation`: Sent by the server if the authentication token is missing, invalid, the user is not authorized to access the file, or if other authentication errors occur.
 
+        * **`expects a payload like this`:**
+  ```json
+  {
+    "type": "text_change",
+    "start": 0,
+    "delete_count": 17,
+    "insert": "Example code modification"
+  } 
+       
 * **`POST /files/{file_id}/add_collaborator`**
     * **Description:** Adds a collaborator to a specific code file.
     * **Path Parameter:**
